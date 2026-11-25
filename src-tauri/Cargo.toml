@@ -1,6 +1,6 @@
 [package]
 name = "silajur"
-version = "0.4.3"
+version = "0.4.4"
 description = "Aplikasi pendamping ARKAS untuk SPJ BOSP"
 license = "MIT"
 edition = "2021"
@@ -29,6 +29,7 @@ image = { version = "0.25.10", default-features = false, features = [
 	"png"
 ] }
 keyring = { version = "3", features = [ "windows-native" ] }
+pdf-extract = "0.12.1"
 rusqlite = { version = "0.40.2", features = [ "bundled-sqlcipher-vendored-openssl" ] }
 rust_xlsxwriter = { version = "0.99.1", default-features = false }
 serde = { version = "1.0.229", features = [ "derive" ] }

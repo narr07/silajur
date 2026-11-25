@@ -3,6 +3,7 @@ pub mod backup;
 pub mod bku;
 pub mod dokumen;
 pub mod export;
+pub mod invoice;
 pub mod laporan;
 pub mod nota;
 pub mod rkas;

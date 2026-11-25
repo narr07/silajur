@@ -15,10 +15,10 @@
 	/** Berkas SPPD: satu surat tugas untuk semua pelaksana, lalu dokumen per orang berurutan. */
 	const props = defineProps<{
 		d: SppdData
-		/** Seluruh guru dari Pengaturan; pelaksana ditentukan `d.pelaksana`. */
+		/** Seluruh guru dari Pengaturan; pelaksana ditentukan `d.pelaksana` dan `d.pelaksanaLain`. */
 		guru: Guru[]
 		jenis: JenisDokumenSppd[]
 	}>();
 
-	const pelaksana = computed(() => props.guru.filter((g) => props.d.pelaksana.includes(g.id)));
+	const pelaksana = computed(() => pelaksanaSppd(props.d, props.guru));
 </script>

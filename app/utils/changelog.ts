@@ -9,6 +9,20 @@ export interface VersiRilis {
 
 export const CHANGELOG: VersiRilis[] = [
 	{
+		versi: "0.4.4",
+		tanggal: "2026-11-25",
+		judul: "Impor invoice PDF ke SI, SPPD manual",
+		ringkasan: "Proforma invoice SIPLah bisa langsung diimpor ke Standing Instruction, dan SPPD kini bisa dibuat manual dengan isi surat tugas yang lebih bebas.",
+		perubahan: [
+			{ jenis: "baru", teks: "Impor Invoice PDF di Generator SI: pilih satu atau beberapa proforma invoice SIPLah (Toko Ladang, Blibli), setiap invoice langsung jadi satu baris berisi penyedia, bank, nomor Virtual Account, total tagihan, dan keterangan barang" },
+			{ jenis: "baru", teks: "Rekening sekolah, bank tujuan, dan NIK kepala sekolah serta bendahara diisi sekali di Pengaturan, lalu otomatis terisi di setiap SI baru" },
+			{ jenis: "baru", teks: "SPPD manual: buat SPPD tanpa memilih belanja di BKU, tersimpan dan bisa dibuka atau dihapus kapan saja" },
+			{ jenis: "baru", teks: "Pelaksana lain di SPPD untuk orang di luar daftar guru, atau salinan guru dengan jabatan/pangkat khusus" },
+			{ jenis: "baru", teks: "Dasar surat tugas boleh lebih dari satu baris dan bisa disusun dari surat undangan; poin Untuk bisa ditulis sendiri, misalnya barang yang harus dibawa" },
+			{ jenis: "ubah", teks: "Tabel rincian SI lebih ringkas: nama penerima satu baris dan huruf lebih kecil agar banyak baris tetap muat" }
+		]
+	},
+	{
 		versi: "0.4.1",
 		tanggal: "2026-11-02",
 		judul: "Toko SIPLah dari lima marketplace",

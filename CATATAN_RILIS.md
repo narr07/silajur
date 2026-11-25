@@ -1,16 +1,13 @@
-### Lajur 0.4.1 - Toko SIPLah dari lima marketplace
+### SiLajur 0.4.4 - Impor invoice PDF ke SI, SPPD manual
 
-Katalog toko SIPLah kini bisa diambil dari Gramedia, Intan Pariwara, Temprina, dan Masmedia, selain Toko Ladang.
+Proforma invoice SIPLah bisa langsung diimpor ke Standing Instruction, dan SPPD kini bisa dibuat manual dengan isi surat tugas yang lebih bebas.
 
 #### Fitur Baru:
-- Tambah toko SIPLah dari Gramedia, Intan Pariwara, Temprina, dan Masmedia cukup dengan menempel link toko; marketplace dikenali otomatis.
-- Harga zona ditampilkan sebagai rentang; perbandingan, perkiraan, dan Pakai harga memakai harga tertinggi agar anggaran tidak kurang.
-- Tautan Lihat di situs toko membuka halaman produk di marketplace asalnya.
+- Impor Invoice PDF di Generator SI: pilih satu atau beberapa proforma invoice SIPLah (Toko Ladang, Blibli), setiap invoice langsung jadi satu baris berisi penyedia, bank, nomor Virtual Account, total tagihan, dan keterangan barang.
+- Rekening sekolah, bank tujuan, dan NIK kepala sekolah serta bendahara diisi sekali di Pengaturan, lalu otomatis terisi di setiap SI baru.
+- SPPD manual: buat SPPD tanpa memilih belanja di BKU, tersimpan dan bisa dibuka atau dihapus kapan saja.
+- Pelaksana lain di SPPD untuk orang di luar daftar guru, atau salinan guru dengan jabatan/pangkat khusus.
+- Dasar surat tugas boleh lebih dari satu baris dan bisa disusun dari surat undangan; poin Untuk bisa ditulis sendiri, misalnya barang yang harus dibawa.
 
 #### Perubahan:
-- Toko yang sangat besar diambil sampai sekitar 3.000 produk, dengan peringatan bila katalog terpotong.
-
-#### Perbaikan:
-- Nama barang yang panjang di tabel pencocokan Toko SIPLah tidak lagi menumpuk dengan kolom harga.
-
-Toko yang sudah tersimpan tetap ada dan otomatis tercatat sebagai Toko Ladang.
+- Tabel rincian SI lebih ringkas: nama penerima satu baris dan huruf lebih kecil agar banyak baris tetap muat.

@@ -126,6 +126,31 @@
 			<UCard>
 				<template #header>
 					<p class="font-medium">
+						Standing Instruction (SI)
+					</p>
+				</template>
+				<p class="text-xs text-muted mb-3">
+					Otomatis terisi saat membuat SI baru di menu Generator, jadi tidak perlu diketik ulang.
+				</p>
+				<div class="grid sm:grid-cols-2 gap-4">
+					<UFormField v-for="f in siFields" :key="f.key" :label="f.label">
+						<template #hint>
+							<SumberIsian :sumber="sumber('si', f.key)" @reset="resetKe('si', f.key)" />
+						</template>
+						<UInput
+							v-model="form.si[f.key]"
+							:placeholder="f.hint"
+							:inputmode="f.angka ? 'numeric' : undefined"
+							:class="f.angka ? 'font-mono' : undefined"
+							class="w-full"
+						/>
+					</UFormField>
+				</div>
+			</UCard>
+
+			<UCard>
+				<template #header>
+					<p class="font-medium">
 						Berita Acara
 					</p>
 				</template>
@@ -163,6 +188,7 @@
 	type PejabatKey = keyof Pengaturan["pejabat"];
 	type KopKey = keyof Pengaturan["kop"];
 	type BaKey = keyof Pengaturan["ba"];
+	type SiKey = keyof Pengaturan["si"];
 
 	const { year } = useArkas();
 	const toast = useToast();
@@ -249,6 +275,15 @@
 		{ key: "tanggalSk", label: "Tanggal SK", hint: "Contoh: 02 Januari 2026" },
 		{ key: "tempat", label: "Tempat rekonsiliasi", hint: "Nama tempat" }
 	];
+	const siFields: { key: SiKey, label: string, hint: string, angka?: boolean }[] = [
+		{ key: "namaRekening", label: "Atas nama rekening sekolah", hint: "20246133 SD NEGERI ..." },
+		{ key: "noRekening", label: "No. rekening sekolah", hint: "0120292021100", angka: true },
+		{ key: "bankTujuan", label: "Bank tujuan surat", hint: "Bank BJB Cabang / KCP ..." },
+		{ key: "kota", label: "Kota / kecamatan penerbitan", hint: "Rajagaluh" },
+		{ key: "nikKepalaSekolah", label: "NIK (No. KTP) Kepala Sekolah", hint: "16 digit", angka: true },
+		{ key: "nikBendahara", label: "NIK (No. KTP) Bendahara", hint: "16 digit", angka: true },
+		{ key: "uraian", label: "Uraian debet rekening", hint: "Belanja Barang dan Jasa" }
+	];
 	const kertasItems = [{ label: "A4 (210 × 297 mm)", value: "A4" }, { label: "F4 (210 × 330 mm)", value: "F4" }];
 
 	const load = async () => {
@@ -263,7 +298,7 @@
 		}
 	};
 
-	type Bagian = "pejabat" | "kop" | "ba" | "cetak";
+	type Bagian = "pejabat" | "kop" | "ba" | "cetak" | "si";
 	type Isian = Record<string, string>;
 
 	/** "arkas" bila isian sama dengan data ARKAS, "manual" bila diubah, null bila ARKAS tidak punya datanya. */
@@ -282,7 +317,7 @@
 		const out = structuredClone(toRaw(p));
 		const bawaan = view.value?.bawaan;
 		if (!bawaan) return out;
-		for (const bagian of ["pejabat", "kop", "ba", "cetak"] as const) {
+		for (const bagian of ["pejabat", "kop", "ba", "cetak", "si"] as const) {
 			const isi = out[bagian] as unknown as Isian;
 			const asal = bawaan[bagian] as unknown as Isian;
 			for (const key of Object.keys(isi)) {

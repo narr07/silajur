@@ -110,28 +110,28 @@
 			</div>
 
 			<!-- Tabel Rincian Transfer Penerima -->
-			<table class="w-full border-collapse border border-black my-2.5 text-[8.5pt]">
+			<table class="w-full border-collapse border border-black my-2.5 text-[7.5pt]">
 				<thead>
 					<tr class="bg-gray-100 font-bold text-center">
 						<th class="border border-black px-1.5 py-1 w-7">
 							No
 						</th>
-						<th class="border border-black px-2 py-1">
+						<th class="border border-black px-1.5 py-1 whitespace-nowrap">
 							Atas Nama Rekening
 						</th>
-						<th class="border border-black px-1.5 py-1 w-14">
+						<th class="border border-black px-1 py-1">
 							Nama Bank
 						</th>
-						<th class="border border-black px-2 py-1 w-28">
+						<th class="border border-black px-1.5 py-1 whitespace-nowrap">
 							No Rekening
 						</th>
-						<th class="border border-black px-2 py-1 w-24">
+						<th class="border border-black px-1.5 py-1">
 							Jumlah Uang
 						</th>
-						<th class="border border-black px-1.5 py-1 w-16">
+						<th class="border border-black px-1 py-1">
 							Pajak
 						</th>
-						<th class="border border-black px-2 py-1 w-24">
+						<th class="border border-black px-1.5 py-1">
 							Jumlah Uang Diterima
 						</th>
 						<th class="border border-black px-2 py-1">
@@ -141,44 +141,45 @@
 				</thead>
 				<tbody>
 					<tr v-for="(item, idx) in si.items" :key="item.id || idx">
-						<td class="border border-black px-1.5 py-1 text-center align-top">
+						<td class="border border-black px-1.5 py-0.5 text-center align-top">
 							{{ idx + 1 }}
 						</td>
-						<td class="border border-black px-2 py-1 align-top font-medium">
+						<!-- Satu baris saja (seperti format SI bank); huruf sedikit lebih kecil agar muat. -->
+						<td class="border border-black px-1.5 py-0.5 align-top whitespace-nowrap text-[7pt]">
 							{{ item.namaPenerima }}
 						</td>
-						<td class="border border-black px-1.5 py-1 text-center align-top font-mono">
+						<td class="border border-black px-1 py-0.5 text-center align-top whitespace-nowrap">
 							{{ item.namaBank || 'BJB' }}
 						</td>
-						<td class="border border-black px-2 py-1 text-center align-top font-mono">
+						<td class="border border-black px-1.5 py-0.5 text-center align-top whitespace-nowrap tabular-nums">
 							{{ item.noRekening }}
 						</td>
-						<td class="border border-black px-2 py-1 text-right align-top tabular-nums font-mono">
+						<td class="border border-black px-1.5 py-0.5 text-right align-top tabular-nums font-bold whitespace-nowrap">
 							{{ angka(item.jumlah) }}
 						</td>
-						<td class="border border-black px-1.5 py-1 text-right align-top tabular-nums font-mono">
+						<td class="border border-black px-1 py-0.5 text-right align-top tabular-nums whitespace-nowrap">
 							{{ item.pajak > 0 ? angka(item.pajak) : '-' }}
 						</td>
-						<td class="border border-black px-2 py-1 text-right align-top tabular-nums font-bold font-mono">
+						<td class="border border-black px-1.5 py-0.5 text-right align-top tabular-nums font-bold whitespace-nowrap">
 							{{ angka(item.jumlah - (item.pajak || 0)) }}
 						</td>
-						<td class="border border-black px-2 py-1 align-top">
+						<td class="border border-black px-1.5 py-0.5 align-top text-center">
 							{{ item.keterangan }}
 						</td>
 					</tr>
 
 					<!-- Total Row -->
 					<tr class="font-bold bg-gray-50">
-						<td colspan="4" class="border border-black px-2 py-1 text-center uppercase tracking-wider">
+						<td colspan="4" class="border border-black px-2 py-0.5 text-center uppercase tracking-wider">
 							Total
 						</td>
-						<td class="border border-black px-2 py-1 text-right tabular-nums font-mono">
+						<td class="border border-black px-1.5 py-0.5 text-right tabular-nums whitespace-nowrap">
 							{{ angka(totalJumlah) }}
 						</td>
-						<td class="border border-black px-1.5 py-1 text-right tabular-nums font-mono">
+						<td class="border border-black px-1 py-0.5 text-right tabular-nums whitespace-nowrap">
 							{{ totalPajak > 0 ? angka(totalPajak) : '-' }}
 						</td>
-						<td class="border border-black px-2 py-1 text-right tabular-nums font-mono text-[9pt]">
+						<td class="border border-black px-1.5 py-0.5 text-right tabular-nums whitespace-nowrap">
 							{{ angka(totalDiterima) }}
 						</td>
 						<td class="border border-black px-2 py-1" />

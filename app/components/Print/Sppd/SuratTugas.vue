@@ -19,7 +19,14 @@
 							:
 						</td>
 						<td class="text-justify">
-							{{ d.dasar || "........................................................................................................" }}
+							<ol v-if="dasar.length > 1" class="list-decimal pl-5">
+								<li v-for="(x, i) in dasar" :key="i">
+									{{ x }}
+								</li>
+							</ol>
+							<template v-else>
+								{{ dasar[0] || "........................................................................................................" }}
+							</template>
 						</td>
 					</tr>
 				</tbody>
@@ -53,9 +60,9 @@
 						<td>:</td>
 						<td colspan="2">
 							<ol class="list-decimal pl-5 text-justify">
-								<li>{{ d.maksud }} pada tanggal {{ rentangTanggal(d) }} bertempat di {{ d.tujuan || "...................." }}.</li>
-								<li>Menyampaikan laporan hasil pelaksanaan tugas kepada pimpinan.</li>
-								<li>Dilaksanakan dengan penuh rasa tanggung jawab.</li>
+								<li v-for="(x, i) in untuk" :key="i">
+									{{ x }}
+								</li>
 							</ol>
 						</td>
 					</tr>
@@ -70,6 +77,9 @@
 <script lang="ts" setup>
 	const props = defineProps<{ d: SppdData, pelaksana: Guru[] }>();
 	const { pengaturan, sekolah } = useDocContext();
+
+	const dasar = computed(() => barisTeks(props.d.dasar));
+	const untuk = computed(() => poinUntuk(props.d));
 
 	const signers = computed<Penandatangan[]>(() => {
 		const p = pengaturan.value?.pejabat;

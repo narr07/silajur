@@ -44,6 +44,8 @@ export const useGeneratorBelanja = <T>(opts: {
 
 	const selectedKey = ref<string | null>(null);
 	const form = ref(null) as Ref<T | null>;
+	/** Isian yang sedang dibuka tidak berasal dari belanja BKU (dibuat manual). */
+	const manual = ref(false);
 
 	const filtered = computed(() => {
 		const q = search.value.trim().toLowerCase();
@@ -71,9 +73,17 @@ export const useGeneratorBelanja = <T>(opts: {
 	});
 
 	const pick = (g: NotaGroup) => {
+		manual.value = false;
 		selectedKey.value = g.key;
 		const tersimpan = saved.value[g.key];
 		form.value = opts.buat(g, tersimpan ? structuredClone(toRaw(tersimpan)) : undefined, konteks(g));
+	};
+
+	/** Buka isian manual (tanpa belanja BKU) dengan kunci sendiri; disimpan bersama isian lain. */
+	const pickManual = (key: string, data: T) => {
+		manual.value = true;
+		selectedKey.value = key;
+		form.value = data;
 	};
 
 	/** Buang isian tersimpan di layar dan isi ulang dari ARKAS. */
@@ -89,7 +99,7 @@ export const useGeneratorBelanja = <T>(opts: {
 		error.value = "";
 		try {
 			groups.value = await api.notaList(year.value, month.value || null, fundArg.value);
-			if (!selected.value) {
+			if (!selected.value && !manual.value) {
 				selectedKey.value = null;
 				form.value = null;
 			}
@@ -102,6 +112,7 @@ export const useGeneratorBelanja = <T>(opts: {
 
 	/** Data per tahun: nama kegiatan/rekening dari RKAS, daftar guru, dan isian tersimpan. */
 	const loadYear = async () => {
+		manual.value = false;
 		selectedKey.value = null;
 		form.value = null;
 		if (!connected.value || !year.value) return;
@@ -138,6 +149,26 @@ export const useGeneratorBelanja = <T>(opts: {
 		}
 	};
 
+	/** Hapus isian tersimpan (dipakai untuk isian manual). */
+	const hapus = async (key: string) => {
+		if (!year.value) return false;
+		try {
+			const next = { ...toRaw(saved.value) };
+			delete next[key];
+			await api.settingsSet(opts.setting(year.value), next);
+			saved.value = next;
+			if (selectedKey.value === key) {
+				selectedKey.value = null;
+				form.value = null;
+				manual.value = false;
+			}
+			return true;
+		} catch (err) {
+			toast.add({ title: "Gagal menghapus", description: errorMessage(err), color: "error" });
+			return false;
+		}
+	};
+
 	return {
 		connected,
 		year,
@@ -156,11 +187,14 @@ export const useGeneratorBelanja = <T>(opts: {
 		selectedKey,
 		selected,
 		form,
+		manual,
 		filtered,
 		namaKegiatan,
 		namaKegiatanArkas,
 		pick,
+		pickManual,
 		reset,
-		save
+		save,
+		hapus
 	};
 };

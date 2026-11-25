@@ -128,6 +128,16 @@ export interface Pengaturan {
 	}
 	ba: { nomor: string, tanggalSurat: string, nomorSk: string, tanggalSk: string, tempat: string }
 	cetak: { kota: string, kertas: string }
+	/** Data tetap Generator SI: rekening sekolah, bank tujuan, dan NIK penandatangan. */
+	si: {
+		namaRekening: string
+		noRekening: string
+		bankTujuan: string
+		kota: string
+		uraian: string
+		nikKepalaSekolah: string
+		nikBendahara: string
+	}
 }
 
 export interface PengaturanView {
@@ -246,6 +256,24 @@ export interface SiplahSyncProgress {
 	produk: number
 }
 
+/** Hasil membaca invoice SIPLah (PDF). Lihat src-tauri/src/services/invoice.rs. */
+export interface InvoicePdf {
+	nomor: string | null
+	kodePesanan: string | null
+	tanggal: string | null
+	penyedia: string | null
+	bank: string | null
+	noRekening: string | null
+	total: number | null
+	ppn: number | null
+	pph22: number | null
+	barang: string[]
+	/** Invoice pelunasan (pesanan sudah dibayar), bukan proforma. */
+	lunas: boolean
+	keterangan: string
+	peringatan: string[]
+}
+
 export interface ApiError {
 	code: string
 	message: string
@@ -327,6 +355,9 @@ export const api = {
 		call<string>("nota_file_upload", { year, refId, month, sourcePath }),
 	notaFileData: (id: string) => call<string>("nota_file_data", { id }),
 	notaFileDelete: (id: string) => call<void>("nota_file_delete", { id }),
+
+	// Generator SI
+	invoicePdfBaca: (path: string) => call<InvoicePdf>("invoice_pdf_baca", { path }),
 
 	// Laporan
 	periodSummary: (year: number, start: number, end: number, fund: number | null) =>

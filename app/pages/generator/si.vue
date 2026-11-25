@@ -201,6 +201,16 @@
 
 						<div class="flex items-center gap-2">
 							<UButton
+								icon="i-lucide-file-input"
+								color="neutral"
+								variant="outline"
+								size="sm"
+								:loading="invoiceMembaca"
+								@click="imporInvoicePdf"
+							>
+								Impor Invoice PDF
+							</UButton>
+							<UButton
 								icon="i-lucide-calendar-check"
 								color="neutral"
 								variant="outline"
@@ -229,7 +239,7 @@
 						Belum Ada Penerima Transfer
 					</p>
 					<p class="text-xs mt-1 max-w-md mx-auto">
-						Klik <strong>"Pilih dari ARKAS Bulanan"</strong> untuk mengambil rencana belanja bulanan dari RKAS atau <strong>"Tambah Baris Manual"</strong> untuk menginput data rekening toko/rekanan secara langsung.
+						Klik <strong>"Impor Invoice PDF"</strong> untuk membaca proforma invoice SIPLah (satu invoice jadi satu baris), <strong>"Pilih dari ARKAS Bulanan"</strong> untuk mengambil rencana belanja bulanan dari RKAS, atau <strong>"Tambah Baris Manual"</strong> untuk menginput data rekening toko/rekanan secara langsung.
 					</p>
 				</div>
 
@@ -745,10 +755,94 @@
 		});
 	};
 
+	// Impor Invoice PDF (SIPLah): satu invoice langsung menjadi satu baris rincian SI.
+	// Pajak diisi 0 karena tagihan SIPLah dibayar penuh ke Virtual Account.
+	const invoiceMembaca = ref(false);
+	const NON_DIGIT = /\D/g;
+	const PEMISAH_PATH = /[\\/]/;
+	const namaFile = (path: string) => path.split(PEMISAH_PATH).pop() || path;
+
+	const imporInvoicePdf = async () => {
+		const picked = await useTauriDialogOpen({ multiple: true, filters: [{ name: "Invoice PDF", extensions: ["pdf"] }] });
+		const paths = Array.isArray(picked) ? picked : picked ? [picked] : [];
+		if (!paths.length) return;
+
+		invoiceMembaca.value = true;
+		try {
+			const hasil = await Promise.allSettled(paths.map((p) => api.invoicePdfBaca(p)));
+			const rekeningAda = new Set(form.value.items.map((it) => it.noRekening.replace(NON_DIGIT, "")).filter(Boolean));
+			let masuk = 0;
+			const kembar: string[] = [];
+			const gagal: string[] = [];
+			const perluCek: string[] = [];
+
+			hasil.forEach((r, i) => {
+				const file = namaFile(paths[i] ?? "");
+				if (r.status === "rejected") {
+					gagal.push(`${file}: ${errorMessage(r.reason)}`);
+					return;
+				}
+				const inv = r.value;
+				// VA berlaku untuk satu pesanan, jadi VA yang sama berarti invoice yang sama.
+				if (inv.noRekening && rekeningAda.has(inv.noRekening)) {
+					kembar.push(file);
+					return;
+				}
+				if (inv.noRekening) rekeningAda.add(inv.noRekening);
+				form.value.items.push({
+					id: `invoice-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+					namaPenerima: inv.penyedia ?? "",
+					namaBank: inv.bank ?? "",
+					noRekening: inv.noRekening ?? "",
+					jumlah: inv.total ?? 0,
+					pajak: 0,
+					keterangan: inv.keterangan
+				});
+				masuk++;
+				if (inv.peringatan.length) perluCek.push(`${file}: ${inv.peringatan.join(", ")}`);
+			});
+
+			if (masuk > 0) {
+				toast.add({
+					title: "Invoice Dimasukkan",
+					description: `${masuk} invoice ditambahkan ke rincian SI. Periksa lalu simpan draft.`,
+					color: "success"
+				});
+			}
+			if (kembar.length) {
+				toast.add({
+					title: "Dilewati: sudah ada di rincian",
+					description: kembar.join("; "),
+					color: "neutral"
+				});
+			}
+			if (perluCek.length) {
+				toast.add({
+					title: "Periksa baris berikut",
+					description: perluCek.join("; "),
+					color: "warning",
+					duration: 10000
+				});
+			}
+			if (gagal.length) {
+				toast.add({
+					title: "Gagal membaca PDF",
+					description: gagal.join("; "),
+					color: "error",
+					duration: 10000
+				});
+			}
+		} finally {
+			invoiceMembaca.value = false;
+		}
+	};
+
 	// Inisialisasi data form default dari sekolah & pejabat
 	const inisialisasiFormDefault = () => {
 		const sek = sekolah.value;
 		const pej = pengaturan.value?.pejabat;
+		// Rekening, bank, dan NIK dari Pengaturan > Standing Instruction.
+		const si = pengaturan.value?.si;
 
 		form.value = {
 			nomorSurat: "",
@@ -756,17 +850,17 @@
 			lampiran: "-",
 			perihal: "Pemindah bukuan/Transfer",
 			tanggal: new Date().toISOString().slice(0, 10),
-			kota: sek?.kecamatan || "Rajagaluh",
-			bankTujuan: `Bank BJB Cabang / KCP ${sek?.kecamatan || "Rajagaluh"}`,
-			namaRekeningSumber: sek?.nama ? `${sek?.npsn || ""} ${sek.nama}`.trim() : "",
-			noRekeningSumber: "",
-			uraianSumber: "Belanja Barang dan Jasa",
+			kota: si?.kota || sek?.kecamatan || "Rajagaluh",
+			bankTujuan: si?.bankTujuan || `Bank BJB Cabang / KCP ${sek?.kecamatan || "Rajagaluh"}`,
+			namaRekeningSumber: si?.namaRekening || (sek?.nama ? `${sek?.npsn || ""} ${sek.nama}`.trim() : ""),
+			noRekeningSumber: si?.noRekening || "",
+			uraianSumber: si?.uraian || "Belanja Barang dan Jasa",
 			namaKepalaSekolah: pej?.kepalaSekolah || sek?.kepalaSekolah || "",
 			nipKepalaSekolah: pej?.nipKepalaSekolah || sek?.nipKepalaSekolah || "",
-			ktpKepalaSekolah: "",
+			ktpKepalaSekolah: si?.nikKepalaSekolah || "",
 			namaBendahara: pej?.bendahara || sek?.bendahara || "",
 			nipBendahara: pej?.nipBendahara || sek?.nipBendahara || "",
-			ktpBendahara: "",
+			ktpBendahara: si?.nikBendahara || "",
 			items: []
 		};
 		activeDraftId.value = `draft-${Date.now()}`;
@@ -777,7 +871,15 @@
 		const d = daftarDraft.value.find((item) => item.id === id);
 		if (d) {
 			activeDraftId.value = d.id;
-			form.value = JSON.parse(JSON.stringify(d.data));
+			const data: SiData = JSON.parse(JSON.stringify(d.data));
+			// Draft lama yang rekening/NIK-nya masih kosong ikut terisi dari Pengaturan.
+			const si = pengaturan.value?.si;
+			if (si) {
+				data.noRekeningSumber ||= si.noRekening;
+				data.ktpKepalaSekolah ||= si.nikKepalaSekolah;
+				data.ktpBendahara ||= si.nikBendahara;
+			}
+			form.value = data;
 		}
 	};
 

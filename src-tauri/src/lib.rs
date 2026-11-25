@@ -18,6 +18,11 @@ use tauri::Manager;
 use crate::repo::app::AppDb;
 use crate::state::AppState;
 
+/// Mode subproses (mis. ekstraksi teks PDF). `Some(kode_keluar)` berarti jendela tidak perlu dibuka.
+pub fn subproses() -> Option<i32> {
+	commands::invoice::jalankan_subproses()
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
 	tauri::Builder::default()
@@ -84,6 +89,7 @@ pub fn run() {
 			commands::nota::nota_file_upload,
 			commands::nota::nota_file_data,
 			commands::nota::nota_file_delete,
+			commands::invoice::invoice_pdf_baca,
 			commands::laporan::period_summary,
 			commands::laporan::period_summary_by_fund,
 			commands::laporan::rekon_bank,

@@ -1,4 +1,4 @@
-//! Pengaturan dokumen: pejabat penandatangan, kop surat, dan nomor Berita Acara.
+//! Pengaturan dokumen: pejabat penandatangan, kop surat, nomor Berita Acara, dan data Standing Instruction.
 //! Nilai bawaan diambil dari ARKAS; yang diisi pengguna disimpan di `sibos.db` dan
 //! menimpa nilai bawaan per kolom. Data ARKAS tidak diubah.
 
@@ -71,6 +71,22 @@ pub struct Cetak {
 	pub kertas: String,
 }
 
+/// Data tetap untuk Generator Standing Instruction (SI): rekening sekolah, bank, dan NIK penandatangan.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase", default)]
+pub struct Si {
+	/// Atas nama rekening sekolah, mis. "20246133 SD NEGERI TEJA II".
+	pub nama_rekening: String,
+	pub no_rekening: String,
+	/// Bank tujuan surat, mis. "Bank BJB Cabang / KCP Rajagaluh".
+	pub bank_tujuan: String,
+	/// Kota/kecamatan penerbitan surat.
+	pub kota: String,
+	pub uraian: String,
+	pub nik_kepala_sekolah: String,
+	pub nik_bendahara: String,
+}
+
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase", default)]
 pub struct Pengaturan {
@@ -78,6 +94,7 @@ pub struct Pengaturan {
 	pub kop: Kop,
 	pub ba: BeritaAcara,
 	pub cetak: Cetak,
+	pub si: Si,
 }
 
 /// Hasil untuk halaman Pengaturan: yang tersimpan, bawaan dari ARKAS, dan gabungannya.
@@ -113,6 +130,7 @@ pub fn bawaan(school: &SchoolInfo) -> Pengaturan {
 	} else {
 		format!("PEMERINTAH KABUPATEN {}", kota_dari_kabupaten(&kab).to_uppercase())
 	};
+	let kecamatan = s(&school.kecamatan);
 	Pengaturan {
 		pejabat: Pejabat {
 			kepala_sekolah: s(&school.kepala_sekolah),
@@ -139,6 +157,17 @@ pub fn bawaan(school: &SchoolInfo) -> Pengaturan {
 		},
 		ba: BeritaAcara { tempat: s(&school.nama), ..Default::default() },
 		cetak: Cetak { kota: kota_dari_kabupaten(&kab), kertas: "A4".into() },
+		si: Si {
+			nama_rekening: [s(&school.npsn), s(&school.nama).to_uppercase()]
+				.into_iter()
+				.filter(|p| !p.trim().is_empty())
+				.collect::<Vec<_>>()
+				.join(" "),
+			bank_tujuan: if kecamatan.is_empty() { String::new() } else { format!("Bank BJB Cabang / KCP {kecamatan}") },
+			kota: kecamatan,
+			uraian: "Belanja Barang dan Jasa".into(),
+			..Default::default()
+		},
 	}
 }
 
@@ -156,6 +185,7 @@ pub fn gabung(saved: &Pengaturan, default: &Pengaturan) -> Pengaturan {
 	let (sk, dk) = (&saved.kop, &default.kop);
 	let (sb, db) = (&saved.ba, &default.ba);
 	let (sc, dc) = (&saved.cetak, &default.cetak);
+	let (ss, ds) = (&saved.si, &default.si);
 	Pengaturan {
 		pejabat: Pejabat {
 			kepala_sekolah: pick(&sp.kepala_sekolah, &dp.kepala_sekolah),
@@ -193,6 +223,15 @@ pub fn gabung(saved: &Pengaturan, default: &Pengaturan) -> Pengaturan {
 			tempat: pick(&sb.tempat, &db.tempat),
 		},
 		cetak: Cetak { kota: pick(&sc.kota, &dc.kota), kertas: pick(&sc.kertas, &dc.kertas) },
+		si: Si {
+			nama_rekening: pick(&ss.nama_rekening, &ds.nama_rekening),
+			no_rekening: pick(&ss.no_rekening, &ds.no_rekening),
+			bank_tujuan: pick(&ss.bank_tujuan, &ds.bank_tujuan),
+			kota: pick(&ss.kota, &ds.kota),
+			uraian: pick(&ss.uraian, &ds.uraian),
+			nik_kepala_sekolah: pick(&ss.nik_kepala_sekolah, &ds.nik_kepala_sekolah),
+			nik_bendahara: pick(&ss.nik_bendahara, &ds.nik_bendahara),
+		},
 	}
 }
 
@@ -219,6 +258,10 @@ pub fn validate(p: &Pengaturan) -> AppResult<()> {
 	digits_only("NIP Pemegang Barang", &j.nip_pemegang_barang)?;
 	digits_only("NIP Petugas Rekonsiliasi", &j.nip_petugas_rekon)?;
 	digits_only("NIP Ketua Komite", &j.nip_komite)?;
+	digits_only("NIK Kepala Sekolah", &p.si.nik_kepala_sekolah)?;
+	digits_only("NIK Bendahara", &p.si.nik_bendahara)?;
+	let rek: String = p.si.no_rekening.chars().filter(|c| !matches!(c, '.' | '-')).collect();
+	digits_only("Nomor rekening sekolah", &rek)?;
 	if !p.cetak.kertas.is_empty() && !["A4", "F4"].contains(&p.cetak.kertas.as_str()) {
 		return Err(AppError::InvalidInput("ukuran kertas harus A4 atau F4".into()));
 	}
@@ -256,6 +299,24 @@ mod tests {
 		let merged = gabung(&saved, &bawaan(&school()));
 		assert_eq!(merged.pejabat.bendahara, "Siti");
 		assert_eq!(merged.pejabat.kepala_sekolah, "Budi", "isian kosong memakai bawaan");
+	}
+
+	#[test]
+	fn si_bawaan_dari_arkas_dan_validasi() {
+		let mut sch = school();
+		sch.npsn = Some("20246133".into());
+		sch.kecamatan = Some("Rajagaluh".into());
+		let d = bawaan(&sch);
+		assert_eq!(d.si.nama_rekening, "20246133 SD NEGERI CONTOH");
+		assert_eq!(d.si.bank_tujuan, "Bank BJB Cabang / KCP Rajagaluh");
+		assert_eq!(d.si.kota, "Rajagaluh");
+
+		let mut p = Pengaturan::default();
+		p.si.no_rekening = "0120-2920.21100".into();
+		p.si.nik_bendahara = "3210250702960001".into();
+		assert!(validate(&p).is_ok());
+		p.si.nik_kepala_sekolah = "3210x".into();
+		assert!(validate(&p).is_err());
 	}
 
 	#[test]
