@@ -1,0 +1,51 @@
+# Rilis otomatis: push tag `v*` (mis. v0.4.5) -> build installer bertanda tangan di Windows
+# -> GitHub Release berisi .exe, .msi, .sig, dan latest.json untuk pembaruan otomatis.
+# Langkahnya sama dengan `bun run rilis --terbitkan` di komputer (scripts/rilis.ts).
+#
+# Secret repo yang wajib ada (Settings > Secrets and variables > Actions):
+#   SIBOS_ARKAS_KEY                     kunci database ARKAS yang disematkan ke aplikasi
+#   TAURI_SIGNING_PRIVATE_KEY           isi file %USERPROFILE%\.tauri\sibos.key
+#   TAURI_SIGNING_PRIVATE_KEY_PASSWORD  password kunci tanda tangan (boleh kosong)
+name: Rilis
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rilis-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  rilis:
+    runs-on: windows-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      # SQLCipher + OpenSSL dikompilasi dari sumber; cache memangkas build berikutnya.
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: Pasang dependensi
+        run: bun install --frozen-lockfile
+
+      - name: Build dan terbitkan
+        env:
+          SIBOS_ARKAS_KEY: ${{ secrets.SIBOS_ARKAS_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          # Perl bawaan Git tidak cukup untuk build OpenSSL; runner Windows sudah punya Strawberry Perl.
+          OPENSSL_SRC_PERL: C:\Strawberry\perl\bin\perl.exe
+          GH_TOKEN: ${{ github.token }}
+        run: bun run rilis --terbitkan

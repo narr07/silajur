@@ -5,8 +5,9 @@
  *   bun run rilis              -> build + siapkan latest.json
  *   bun run rilis --terbitkan  -> build + buat GitHub Release (butuh `gh` yang sudah login)
  *
- * Kunci tanda tangan dibaca dari %USERPROFILE%\.tauri\sibos.key (tidak pernah masuk repo).
- * Catatan rilis diambil dari file CATATAN_RILIS.md (opsional, tidak ikut repo).
+ * Kunci tanda tangan dibaca dari env TAURI_SIGNING_PRIVATE_KEY (GitHub Actions, lihat
+ * .github/workflows/rilis.yml), atau dari %USERPROFILE%\.tauri\sibos.key saat build di komputer.
+ * Kunci tidak pernah masuk repo. Catatan rilis diambil dari CATATAN_RILIS.md.
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -21,17 +22,25 @@ const versi: string = conf.version;
 const tag = `v${versi}`;
 const terbitkan = process.argv.includes("--terbitkan");
 
-const kunci = join(homedir(), ".tauri", "sibos.key");
-if (!existsSync(kunci)) {
-	console.error(`Kunci tanda tangan tidak ditemukan: ${kunci}`);
+// Di GitHub Actions, tag yang di-push harus sama dengan versi di tauri.conf.json.
+const refTag = process.env.GITHUB_REF_TYPE === "tag" ? process.env.GITHUB_REF_NAME : undefined;
+if (refTag && refTag !== tag) {
+	console.error(`Tag ${refTag} tidak sama dengan versi aplikasi ${tag} (tauri.conf.json). Naikkan versi dulu lalu buat tag ulang.`);
+	process.exit(1);
+}
+
+const kunciFile = join(homedir(), ".tauri", "sibos.key");
+const kunci = process.env.TAURI_SIGNING_PRIVATE_KEY?.trim() || (existsSync(kunciFile) ? readFileSync(kunciFile, "utf8") : "");
+if (!kunci) {
+	console.error(`Kunci tanda tangan tidak ditemukan: isi env TAURI_SIGNING_PRIVATE_KEY atau buat ${kunciFile}`);
 	process.exit(1);
 }
 
 console.log(`Build SiLajur ${versi} ...`);
 await $`bun run tauri build`.cwd(root).env({
 	...process.env,
-	TAURI_SIGNING_PRIVATE_KEY: readFileSync(kunci, "utf8"),
-	TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
+	TAURI_SIGNING_PRIVATE_KEY: kunci,
+	TAURI_SIGNING_PRIVATE_KEY_PASSWORD: process.env.TAURI_SIGNING_PRIVATE_KEY_PASSWORD ?? ""
 });
 
 const bundle = join(root, "src-tauri", "target", "release", "bundle");

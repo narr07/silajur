@@ -43,6 +43,18 @@ cd src-tauri && cargo test
 
 `cargo test` memuat test keamanan: database ARKAS sintetis terenkripsi dibuka, semua query dijalankan, percobaan menulis harus ditolak, dan isi file harus tetap sama persis.
 
+## Rilis
+
+Rilis dibangun oleh GitHub Actions ([.github/workflows/rilis.yml](.github/workflows/rilis.yml)) setiap kali tag `v*` di-push:
+
+1. Naikkan versi di `package.json`, `src-tauri/Cargo.toml`, dan `src-tauri/tauri.conf.json`.
+2. Tambah entri di `app/utils/changelog.ts` dan tulis `CATATAN_RILIS.md` (jadi catatan GitHub Release dan notifikasi pembaruan).
+3. Commit, push, lalu `git tag v0.x.y` dan `git push origin v0.x.y`.
+
+Workflow menjalankan `bun run rilis --terbitkan`: build installer `.exe` dan `.msi` bertanda tangan, lalu menerbitkan GitHub Release beserta `latest.json` untuk pembaruan otomatis. Tag harus sama dengan versi aplikasi. Secret repo yang dibutuhkan: `SIBOS_ARKAS_KEY`, `TAURI_SIGNING_PRIVATE_KEY`, dan (bila ada) `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`.
+
+Cadangan tanpa GitHub Actions: `bun run rilis --terbitkan` di komputer, dengan kunci tanda tangan di `%USERPROFILE%\.tauri\sibos.key`.
+
 ## Koneksi ARKAS
 
 Saat pertama dibuka, Lajur mencari `%APPDATA%\Arkas\arkas.db`. Database ARKAS terenkripsi; kuncinya diisi di halaman **Koneksi ARKAS** dan bisa disimpan di Windows Credential Manager. Untuk pengembangan, kunci juga bisa diberikan lewat variabel lingkungan `SIBOS_ARKAS_KEY`.
