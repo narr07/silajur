@@ -250,6 +250,8 @@
 
 	export interface SiData {
 		nomorSurat: string
+		/** Penanda tetap dokumen ini di Agenda Surat (nomor diambil ulang = entri yang sama). */
+		idDokumen?: string
 		sifat: string
 		lampiran: string
 		perihal: string

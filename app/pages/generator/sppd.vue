@@ -232,7 +232,8 @@
 					</template>
 					<div class="grid sm:grid-cols-2 gap-3">
 						<UFormField label="Nomor surat tugas">
-							<UInput v-model="form.nomorSuratTugas" :placeholder="`800/012/SD/${year}`" class="w-full" />
+							<UInput v-model="form.nomorSuratTugas" :placeholder="`000.1.2.3/12/SDN1/${year}`" class="w-full" />
+							<PenomoranAmbilNomor v-model:nomor="form.nomorSuratTugas" :sumber="`sppd:${selectedKey}:tugas`" :perihal="`Surat Tugas ${form.maksud}`" :tgl-surat="form.tanggalSurat" :tujuan="form.tujuan" class="mt-1.5" />
 						</UFormField>
 						<UFormField label="Tanggal surat tugas / SPD" :hint="hariDari(form.tanggalSurat)">
 							<UInput v-model="form.tanggalSurat" type="date" class="w-full" />
@@ -274,7 +275,8 @@
 							/>
 						</UFormField>
 						<UFormField label="Nomor SPD">
-							<UInput v-model="form.nomorSpd" :placeholder="`090/012/SPD/${year}`" class="w-full" />
+							<UInput v-model="form.nomorSpd" :placeholder="`000.1.2.3/13/SDN1/${year}`" class="w-full" />
+							<PenomoranAmbilNomor v-model:nomor="form.nomorSpd" :sumber="`sppd:${selectedKey}:spd`" :perihal="`Surat Perjalanan Dinas ${form.maksud}`" :tgl-surat="form.tanggalSurat" :tujuan="form.tujuan" class="mt-1.5" />
 						</UFormField>
 						<UFormField label="Tingkat biaya perjalanan dinas" hint="Boleh kosong">
 							<UInput v-model="form.tingkatBiaya" class="w-full" />

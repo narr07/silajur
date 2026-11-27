@@ -6,6 +6,8 @@
 #   SIBOS_ARKAS_KEY                     kunci database ARKAS yang disematkan ke aplikasi
 #   TAURI_SIGNING_PRIVATE_KEY           isi file %USERPROFILE%\.tauri\sibos.key
 #   TAURI_SIGNING_PRIVATE_KEY_PASSWORD  password kunci tanda tangan (boleh kosong)
+#   CEKLIS_GOOGLE_CLIENT_ID             Client ID OAuth Google (SAMA dengan repo Ceklis SD) untuk penomoran surat
+#   CEKLIS_GOOGLE_CLIENT_SECRET         pasangan secret-nya; tanpa keduanya fitur Google Drive nonaktif
 name: Rilis
 
 on:
@@ -45,6 +47,8 @@ jobs:
           SIBOS_ARKAS_KEY: ${{ secrets.SIBOS_ARKAS_KEY }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          CEKLIS_GOOGLE_CLIENT_ID: ${{ secrets.CEKLIS_GOOGLE_CLIENT_ID }}
+          CEKLIS_GOOGLE_CLIENT_SECRET: ${{ secrets.CEKLIS_GOOGLE_CLIENT_SECRET }}
           # Perl bawaan Git tidak cukup untuk build OpenSSL; runner Windows sudah punya Strawberry Perl.
           OPENSSL_SRC_PERL: C:\Strawberry\perl\bin\perl.exe
           GH_TOKEN: ${{ github.token }}

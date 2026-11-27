@@ -2,6 +2,7 @@ pub mod arkas;
 pub mod backup;
 pub mod bku;
 pub mod dokumen;
+pub mod drive;
 pub mod export;
 pub mod invoice;
 pub mod laporan;

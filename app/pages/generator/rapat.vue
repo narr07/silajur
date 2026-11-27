@@ -83,7 +83,8 @@
 					</template>
 					<div class="grid sm:grid-cols-2 gap-3">
 						<UFormField label="Nomor surat">
-							<UInput v-model="form.nomorSurat" :placeholder="`421.2/045/BOS/${year}`" class="w-full" />
+							<UInput v-model="form.nomorSurat" :placeholder="`000.1.5/12/SDN1/${year}`" class="w-full" />
+							<PenomoranAmbilNomor v-model:nomor="form.nomorSurat" :sumber="`rapat:${selectedKey}:undangan`" :perihal="`Undangan ${form.namaKegiatan}`" :tgl-surat="form.tanggalSurat" :tujuan="form.kepada" class="mt-1.5" />
 						</UFormField>
 						<UFormField label="Tanggal surat" :hint="hariDari(form.tanggalSurat)">
 							<UInput v-model="form.tanggalSurat" type="date" class="w-full" />
@@ -141,7 +142,8 @@
 					</template>
 					<div class="grid sm:grid-cols-3 gap-3">
 						<UFormField label="Nomor berita acara" class="sm:col-span-3">
-							<UInput v-model="form.nomorBa" :placeholder="`005/012/BA/${year}`" class="w-full sm:w-1/2" />
+							<UInput v-model="form.nomorBa" :placeholder="`000.1.5/BA.13/SDN1/${year}`" class="w-full sm:w-1/2" />
+							<PenomoranAmbilNomor v-model:nomor="form.nomorBa" :sumber="`rapat:${selectedKey}:ba`" :perihal="`Berita Acara ${form.namaKegiatan}`" :tgl-surat="form.tanggal" jenis-naskah="berita-acara" class="mt-1.5" />
 						</UFormField>
 						<UFormField label="Pimpinan rapat">
 							<UInput v-model="form.pimpinan" class="w-full" />

@@ -23,6 +23,9 @@ pub enum AppError {
 	Io(#[from] std::io::Error),
 	#[error("Gagal membuat file Excel: {0}")]
 	Xlsx(#[from] rust_xlsxwriter::XlsxError),
+	/// Galat Google Drive; pesannya sudah siap ditampilkan (lihat gdrive.rs).
+	#[error("{0}")]
+	Drive(String),
 }
 
 impl AppError {
@@ -38,6 +41,7 @@ impl AppError {
 			AppError::Sqlite(_) => "sqlite",
 			AppError::Io(_) => "io",
 			AppError::Xlsx(_) => "xlsx",
+			AppError::Drive(_) => "drive",
 		}
 	}
 }

@@ -36,6 +36,7 @@
 		<slot />
 
 		<LayoutUpdateNotifier />
+		<LayoutPengingatBelanja />
 	</UDashboardGroup>
 </template>
 

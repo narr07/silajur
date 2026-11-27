@@ -140,6 +140,27 @@ export interface Pengaturan {
 	}
 }
 
+/** Status login Google Drive sekolah (Client ID sama dengan Ceklis SD). */
+export interface StatusGoogle {
+	/** Build ini punya Client ID Google. */
+	tersedia: boolean
+	terhubung: boolean
+	email: string
+	nama: string
+}
+
+/** JSON Agenda Surat dari Drive beserta versinya (deteksi perubahan dari komputer/aplikasi lain). */
+export interface HasilAgendaDrive {
+	data: unknown
+	versi: string
+	diubah: string
+}
+
+export interface InfoBerkasDrive {
+	versi: string
+	diubah: string
+}
+
 export interface PengaturanView {
 	tersimpan: Pengaturan
 	bawaan: Pengaturan
@@ -423,6 +444,17 @@ export const api = {
 	exportRealisasiXlsx: (year: number, upto: number | null, fund: number | null, path: string) =>
 		call<string>("export_realisasi_xlsx", { year, upto, fund, path }),
 	exportAllXlsx: (year: number, fund: number | null, path: string) => call<string>("export_all_xlsx", { year, fund, path }),
+	/** Tulis dokumen Word (.docx) hasil susunan frontend; mengembalikan path tersimpan. */
+	simpanDocx: (path: string, data: Uint8Array) => call<string>("simpan_docx", { path, data: Array.from(data) }),
+	/* Google Drive sekolah: login & JSON Agenda Surat bersama Ceklis SD (penomoran surat keluar). */
+	googleStatus: () => call<StatusGoogle>("google_status"),
+	/** Buka login Google di browser; selesai setelah pengguna memberi izin (maks. 5 menit). */
+	googleMasuk: () => call<StatusGoogle>("google_masuk"),
+	googleBatalMasuk: () => call<void>("google_batal_masuk"),
+	googlePutus: () => call<StatusGoogle>("google_putus"),
+	agendaAmbil: (npsn: string) => call<HasilAgendaDrive | null>("agenda_ambil", { npsn }),
+	agendaKirim: (npsn: string, data: unknown, versiDasar: string, paksa = false) => call<InfoBerkasDrive>("agenda_kirim", { npsn, data, versiDasar, paksa }),
+	agendaBukaFolder: () => call<void>("agenda_buka_folder"),
 	backupCreate: (path: string) => call<BackupInfo>("backup_create", { path }),
 	backupInspect: (path: string) => call<BackupInfo>("backup_inspect", { path }),
 	backupRestore: (path: string) => call<BackupInfo>("backup_restore", { path }),

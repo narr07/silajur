@@ -1,7 +1,7 @@
 {
 	"name": "silajur",
 	"type": "module",
-	"version": "0.4.4",
+	"version": "0.5.0",
 	"private": true,
 	"packageManager": "bun@1.3.14",
 	"description": "Aplikasi pendamping ARKAS untuk SPJ BOSP",
@@ -28,6 +28,7 @@
 		"@tauri-apps/plugin-process": "2.4.0",
 		"@tauri-apps/plugin-store": "2.5.0",
 		"@tauri-apps/plugin-updater": "2.13.1",
+		"docx": "9.15.4",
 		"nuxt": "4.5.2",
 		"vue": "3.5.43",
 		"vue-router": "5.3.1",

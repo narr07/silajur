@@ -30,6 +30,24 @@
 
 			<UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-triangle-alert" :title="error" />
 
+			<UAlert
+				v-if="pengingat?.tampil"
+				color="warning"
+				variant="subtle"
+				icon="i-lucide-bell-ring"
+				:title="`Sudah lewat tanggal ${pengaturanPengingat.tanggal}: segera belanjakan dan buat SI`"
+				:description="[
+					pengingat.sisa > 0 ? `${pengingat.itemBelum} item RKAS ${BULAN[pengingat.bulan - 1]} senilai ${rupiah(pengingat.sisa)} belum dibelanjakan.` : `Semua rencana belanja ${BULAN[pengingat.bulan - 1]} sudah terealisasi.`,
+					pengingat.siDibuat ? 'SI bulan ini sudah dibuat.' : 'SI bulan ini belum dibuat.'
+				].join(' ')"
+				:actions="[
+					{ label: 'Rencana belanja', to: '/penganggaran/belanja', color: 'warning', variant: 'solid', icon: 'i-lucide-shopping-cart' },
+					{ label: 'Buat SI', to: '/generator/si', color: 'warning', variant: 'outline', icon: 'i-lucide-landmark' },
+					{ label: 'Ingatkan besok', color: 'neutral', variant: 'ghost', onClick: () => { tundaBesok() } },
+					{ label: 'Sudah selesai', color: 'neutral', variant: 'ghost', onClick: () => { selesaiBulanIni() } }
+				]"
+			/>
+
 			<template v-if="d">
 				<div class="grid grid-cols-2 xl:grid-cols-4 gap-3">
 					<UCard :ui="{ body: 'p-4 sm:p-4' }">
@@ -179,6 +197,10 @@
 
 <script lang="ts" setup>
 	const { connected, school, year, fund } = useArkas();
+	const { status: pengingat, pengaturan: pengaturanPengingat, periksa: periksaPengingat, tundaBesok, selesaiBulanIni } = usePengingatBelanja();
+	watch([year, connected], () => {
+		periksaPengingat();
+	}, { immediate: true });
 
 	const d = ref<Dashboard | null>(null);
 	const loading = ref(false);

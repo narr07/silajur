@@ -105,5 +105,45 @@ fn main() {
 	let out = PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("embedded_key.rs");
 	std::fs::write(out, code).unwrap();
 
+	google_client(&manifest, &env_file);
 	tauri_build::build()
+}
+
+/// Client OAuth Google (tipe Desktop) untuk login Google Drive. Harus SAMA dengan Ceklis SD:
+/// izin `drive.file` hanya melihat berkas buatan Client ID yang sama, sehingga JSON Agenda Surat
+/// buatan Ceklis SD hanya terbaca bila Client ID-nya sama.
+/// Sumber (urut): variabel lingkungan `CEKLIS_GOOGLE_CLIENT_ID`/`_SECRET` (CI), baris yang sama di `.env`,
+/// atau `src-tauri/google-client.json` dari Google Cloud Console. Tanpa itu, fitur Google Drive nonaktif.
+fn google_client(manifest: &std::path::Path, env_file: &PathBuf) {
+	const ID: &str = "CEKLIS_GOOGLE_CLIENT_ID";
+	const RAHASIA: &str = "CEKLIS_GOOGLE_CLIENT_SECRET";
+	println!("cargo:rerun-if-env-changed={ID}");
+	println!("cargo:rerun-if-env-changed={RAHASIA}");
+	let json = manifest.join("google-client.json");
+	println!("cargo:rerun-if-changed={}", json.display());
+
+	if std::env::var(ID).is_ok_and(|v| !v.trim().is_empty()) {
+		return;
+	}
+	let dari_env_file = |kunci: &str| {
+		std::fs::read_to_string(env_file).ok()?.lines().find_map(|baris| {
+			let (k, v) = baris.split_once('=')?;
+			(k.trim() == kunci).then(|| v.trim().trim_matches(['"', '\'']).to_string())
+		})
+	};
+	let pasangan = match (dari_env_file(ID), dari_env_file(RAHASIA)) {
+		(Some(id), Some(r)) if !id.is_empty() && !r.is_empty() => Some((id, r)),
+		_ => std::fs::read_to_string(&json).ok().map(|teks| {
+			let v: serde_json::Value = serde_json::from_str(&teks).expect("google-client.json bukan JSON yang valid");
+			let c = &v["installed"];
+			match (c["client_id"].as_str(), c["client_secret"].as_str()) {
+				(Some(id), Some(r)) => (id.to_string(), r.to_string()),
+				_ => panic!("google-client.json harus berisi client OAuth tipe Desktop (\"installed\")"),
+			}
+		}),
+	};
+	if let Some((id, r)) = pasangan {
+		println!("cargo:rustc-env={ID}={id}");
+		println!("cargo:rustc-env={RAHASIA}={r}");
+	}
 }

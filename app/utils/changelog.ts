@@ -9,6 +9,19 @@ export interface VersiRilis {
 
 export const CHANGELOG: VersiRilis[] = [
 	{
+		versi: "0.5.0",
+		tanggal: "2026-11-28",
+		judul: "Ceklis BOSP, Surat BOSP, dan pengingat tanggal 20",
+		ringkasan: "Tugas BOSP kepala sekolah dan bendahara, beserta surat-suratnya, kini ada di SiLajur. Ada juga pengingat bulanan untuk membelanjakan anggaran dan membuat SI.",
+		perubahan: [
+			{ jenis: "baru", teks: "Menu Administrasi BOSP > Ceklis BOSP: tugas kepala sekolah dan bendahara per tahun anggaran, dengan ringkasan aturan (Juknis BOSP, belanja barang/jasa, ARKAS, pajak) dan tautan ke halaman SiLajur terkait" },
+			{ jenis: "baru", teks: "Menu Administrasi BOSP > Surat BOSP: paket rapat RKAS, SK Tim BOSP, dokumen persiapan belanja, BA perbandingan penyedia, pengumuman dana, daftar honor PPh 21, dan SPJ honor; isian otomatis dari Pengaturan, bisa dicetak atau disimpan sebagai .docx" },
+			{ jenis: "baru", teks: "Pengingat mulai tanggal 20 tiap bulan bila rencana belanja RKAS bulan itu belum terealisasi atau SI bulan itu belum dibuat; muncul sebagai pemberitahuan dan di Dashboard, bisa ditunda atau diatur di Pengaturan" },
+			{ jenis: "baru", teks: "Nomor surat mengikuti SE Bupati Majalengka No. 7/2025 (K/N/S/Y) dengan pilihan kode klasifikasi arsip Perbup Majalengka No. 25/2023; tombol Ambil nomor dari Agenda (bersama Ceklis SD lewat Google Drive) tersedia di generator Rapat, SPPD, SI, Surat BOSP, dan BA Rekonsiliasi, dan akan aktif di rilis berikutnya" },
+			{ jenis: "ubah", teks: "Nomor bawaan surat BOSP memakai pola SE Penomoran Naskah Dinas; nomor Berita Acara rapat RKAS kini bisa diisi" }
+		]
+	},
+	{
 		versi: "0.4.4",
 		tanggal: "2026-11-25",
 		judul: "Impor invoice PDF ke SI, SPPD manual",

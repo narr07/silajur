@@ -63,6 +63,13 @@ export const menuGroups: MenuGroup[] = [
 		]
 	},
 	{
+		title: "Administrasi BOSP",
+		pages: [
+			{ label: "Ceklis BOSP", icon: "i-lucide-list-checks", to: "/bosp/ceklis", phase: 7, description: "Tugas BOSP kepala sekolah dan bendahara per tahun anggaran, dengan tautan ke surat, laporan, dan dasar aturan." },
+			{ label: "Surat BOSP", icon: "i-lucide-file-pen-line", to: "/bosp/surat", phase: 7, description: "Paket rapat RKAS, SK Tim BOSP, dokumen pengadaan, honorarium, dan pengumuman dana: cetak atau simpan .docx." }
+		]
+	},
+	{
 		title: "Lainnya",
 		pages: [
 			{ label: "Backup & Restore", icon: "i-lucide-database-backup", to: "/lainnya/backup", phase: 5, description: "Backup data Lajur, restore, salin arkas.db, export semua laporan." },

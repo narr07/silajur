@@ -89,7 +89,8 @@
 					<div class="space-y-3">
 						<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
 							<UFormField label="Nomor Surat" required>
-								<UInput v-model="form.nomorSurat" placeholder="400.3.5.5/05/IX/SDN.../2026/M" class="w-full" />
+								<UInput v-model="form.nomorSurat" placeholder="400.3.5.5/5/SDN1/2026/M" class="w-full" />
+								<PenomoranAmbilNomor v-model:nomor="form.nomorSurat" :sumber="`si:${form.idDokumen}`" :perihal="form.perihal || 'Standing Instruction (pemindahbukuan)'" :tgl-surat="form.tanggal" :tujuan="form.bankTujuan" class="mt-1.5" />
 							</UFormField>
 							<UFormField label="Tanggal Surat" required>
 								<UInput v-model="form.tanggal" type="date" class="w-full" />
@@ -572,6 +573,7 @@
 	// Form SI
 	const form = ref<SiData>({
 		nomorSurat: "",
+		idDokumen: crypto.randomUUID(),
 		sifat: "Biasa",
 		lampiran: "-",
 		perihal: "Pemindah bukuan/Transfer",
@@ -846,6 +848,7 @@
 
 		form.value = {
 			nomorSurat: "",
+			idDokumen: crypto.randomUUID(),
 			sifat: "Biasa",
 			lampiran: "-",
 			perihal: "Pemindah bukuan/Transfer",
@@ -872,6 +875,8 @@
 		if (d) {
 			activeDraftId.value = d.id;
 			const data: SiData = JSON.parse(JSON.stringify(d.data));
+			// Draft lama belum punya penanda dokumen: pakai id draft agar nomor dari Agenda tetap tertaut.
+			data.idDokumen ||= d.id;
 			// Draft lama yang rekening/NIK-nya masih kosong ikut terisi dari Pengaturan.
 			const si = pengaturan.value?.si;
 			if (si) {

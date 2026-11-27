@@ -157,6 +157,15 @@
 				<div class="grid sm:grid-cols-2 gap-4">
 					<UFormField v-for="f in baFields" :key="f.key" :label="f.label">
 						<UInput v-model="form.ba[f.key]" :placeholder="f.hint" />
+						<PenomoranAmbilNomor
+							v-if="f.key === 'nomor'"
+							v-model:nomor="form.ba.nomor"
+							:sumber="`ba-rekon:${year}`"
+							:perihal="`Berita Acara Rekonsiliasi BOSP TA ${year}`"
+							:tgl-surat="new Date().toISOString().slice(0, 10)"
+							jenis-naskah="berita-acara"
+							class="mt-1.5"
+						/>
 					</UFormField>
 				</div>
 			</UCard>
@@ -173,6 +182,24 @@
 					</UFormField>
 					<UFormField label="Ukuran kertas">
 						<USelect v-model="form.cetak.kertas" :items="kertasItems" />
+					</UFormField>
+				</div>
+			</UCard>
+
+			<LayoutGoogleDrivePanel />
+
+			<UCard>
+				<template #header>
+					<p class="font-medium">
+						Pengingat belanja & SI
+					</p>
+				</template>
+				<div class="grid sm:grid-cols-2 gap-4">
+					<UFormField label="Ingatkan tiap bulan" help="Muncul di Dashboard dan sebagai pemberitahuan bila masih ada sisa rencana belanja bulan ini atau SI bulan ini belum dibuat.">
+						<USwitch v-model="pengingat.aktif" label="Aktif" />
+					</UFormField>
+					<UFormField label="Mulai tanggal" help="Bawaan 20. Berlaku sampai akhir bulan.">
+						<UInputNumber v-model="pengingat.tanggal" :min="1" :max="28" :disabled="!pengingat.aktif" />
 					</UFormField>
 				</div>
 			</UCard>
@@ -198,6 +225,8 @@
 	const saving = ref(false);
 	const error = ref("");
 	const guru = ref<Guru[]>([]);
+	const { muatPengaturan: muatPengingat, simpan: simpanPengingat } = usePengingatBelanja();
+	const pengingat = ref<PengaturanPengingat>(pengingatBawaan());
 
 	const geserGuru = (i: number, arah: -1 | 1) => {
 		const [g] = guru.value.splice(i, 1);
@@ -269,7 +298,7 @@
 		}
 	};
 	const baFields: { key: BaKey, label: string, hint: string }[] = [
-		{ key: "nomor", label: "Nomor Berita Acara", hint: "Contoh: 900/001/SD/2026" },
+		{ key: "nomor", label: "Nomor Berita Acara", hint: "Pola SE 7/2025: K/BA.N/S/Y, mis. 900.1/BA.3/SDN1/2026" },
 		{ key: "tanggalSurat", label: "Tanggal surat", hint: "Contoh: 01 Juli 2026" },
 		{ key: "nomorSk", label: "Nomor SK", hint: "Nomor SK penunjukan" },
 		{ key: "tanggalSk", label: "Tanggal SK", hint: "Contoh: 02 Januari 2026" },
@@ -293,6 +322,7 @@
 			form.value = structuredClone(toRaw(view.value.efektif));
 			if (!form.value.cetak.kertas) form.value.cetak.kertas = "A4";
 			guru.value = (await api.settingsGet<Guru[]>(SETTING_GURU)) ?? [];
+			pengingat.value = { ...(await muatPengingat()) };
 		} catch (err) {
 			error.value = errorMessage(err);
 		}
@@ -333,6 +363,7 @@
 		try {
 			await api.pengaturanSet(tanpaBawaan(form.value));
 			await api.settingsSet(SETTING_GURU, toRaw(guru.value).filter((g) => g.nama.trim()).map((g) => ({ ...g, nama: g.nama.trim() })));
+			await simpanPengingat({ ...pengingat.value, tanggal: batasTanggal(pengingat.value.tanggal) });
 			toast.add({ title: "Pengaturan tersimpan", color: "success" });
 			await load();
 		} catch (err) {

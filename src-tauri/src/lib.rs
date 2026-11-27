@@ -2,6 +2,7 @@ mod bla_shield;
 mod commands;
 mod error;
 mod export;
+mod gdrive;
 mod pengaturan;
 mod repo;
 mod secret;
@@ -112,6 +113,14 @@ pub fn run() {
 			commands::export::export_kertas_kerja_xlsx,
 			commands::export::export_realisasi_xlsx,
 			commands::export::export_all_xlsx,
+			commands::export::simpan_docx,
+			commands::drive::google_status,
+			commands::drive::google_masuk,
+			commands::drive::google_batal_masuk,
+			commands::drive::google_putus,
+			commands::drive::agenda_ambil,
+			commands::drive::agenda_kirim,
+			commands::drive::agenda_buka_folder,
 			commands::rkas_draft::rkas_draft_list,
 			commands::rkas_draft::rkas_draft_from_arkas,
 			commands::rkas_draft::rkas_draft_copy,

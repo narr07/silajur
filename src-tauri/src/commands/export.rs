@@ -526,3 +526,52 @@ pub fn export_all_xlsx(state: State<'_, AppState>, year: i32, fund: Option<i64>,
 	wb.save(&path)?;
 	Ok(path.display().to_string())
 }
+
+/// Batas ukuran dokumen Word dari frontend (logo kop ikut tertanam).
+const MAX_DOCX: usize = 25 * 1024 * 1024;
+
+/// Cek isi dan lokasi dokumen Word sebelum ditulis: harus berkas ZIP (.docx) dan berakhiran .docx.
+fn docx_target(path: &str, data: &[u8]) -> AppResult<PathBuf> {
+	let mut p = PathBuf::from(path.trim());
+	if p.as_os_str().is_empty() {
+		return Err(AppError::InvalidInput("lokasi file belum dipilih".into()));
+	}
+	if p.extension().is_none_or(|e| !e.eq_ignore_ascii_case("docx")) {
+		p.set_extension("docx");
+	}
+	if data.len() > MAX_DOCX {
+		return Err(AppError::InvalidInput("dokumen terlalu besar (maks. 25 MB)".into()));
+	}
+	if !data.starts_with(b"PK\x03\x04") {
+		return Err(AppError::InvalidInput("isi dokumen bukan file Word (.docx)".into()));
+	}
+	Ok(p)
+}
+
+/// Simpan dokumen Word (.docx) Surat BOSP yang disusun di frontend ke lokasi pilihan pengguna.
+#[tauri::command(async)]
+pub fn simpan_docx(path: String, data: Vec<u8>) -> AppResult<String> {
+	let path = docx_target(&path, &data)?;
+	std::fs::write(&path, &data)?;
+	Ok(path.display().to_string())
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	const ZIP: &[u8] = b"PK\x03\x04isi";
+
+	#[test]
+	fn docx_target_menambah_ekstensi() {
+		assert_eq!(docx_target("C:/x/surat", ZIP).unwrap(), PathBuf::from("C:/x/surat.docx"));
+		assert_eq!(docx_target("C:/x/surat.DOCX", ZIP).unwrap(), PathBuf::from("C:/x/surat.DOCX"));
+	}
+
+	#[test]
+	fn docx_target_menolak_isi_bukan_zip_dan_lokasi_kosong() {
+		assert!(docx_target("C:/x/surat.docx", b"bukan zip").is_err());
+		assert!(docx_target("  ", ZIP).is_err());
+		assert!(docx_target("C:/x/surat.docx", &[]).is_err());
+	}
+}

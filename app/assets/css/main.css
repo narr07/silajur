@@ -97,6 +97,28 @@
 	font-variant-numeric: tabular-nums;
 }
 
+/* Naskah Surat BOSP: 12pt seperti file .docx-nya */
+.doc.naskah-bosp {
+	font-size: 12pt;
+}
+.doc table.naskah-tabel {
+	table-layout: fixed;
+	font-size: 11pt;
+}
+.doc table.naskah-tabel td {
+	vertical-align: middle;
+	overflow-wrap: anywhere;
+}
+.doc table.naskah-tabel tr.tall td {
+	height: 2.6em;
+}
+.doc table.naskah-tabel.kecil {
+	font-size: 8pt;
+}
+.doc table.naskah-tabel tr {
+	break-inside: avoid;
+}
+
 /* Nama/isian kosong di dokumen cetak: garis untuk ditulis tangan */
 .garis-isi {
 	display: inline-block;
