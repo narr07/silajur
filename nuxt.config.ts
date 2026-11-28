@@ -49,6 +49,18 @@ export default defineNuxtConfig({
 			scan: true,
 			// Ikon menu ditulis di file .ts (app/utils/menu.ts), pastikan ikut dibundel
 			icons: [
+				// Ikon jenis belanja di app/utils/spj.ts
+				"lucide:hand-coins",
+				"lucide:monitor",
+				"lucide:newspaper",
+				"lucide:package",
+				"lucide:plug-zap",
+				"lucide:printer",
+				"lucide:shopping-bag",
+				"lucide:shopping-basket",
+				"lucide:stamp",
+				"lucide:utensils",
+				"lucide:wrench",
 				"lucide:book-open",
 				"lucide:car",
 				"lucide:chart-column",

@@ -41,7 +41,8 @@ export const menuGroups: MenuGroup[] = [
 			{ label: "Buku Pembantu Tunai", icon: "i-lucide-wallet", to: "/penatausahaan/tunai", phase: 1, description: "BKU difilter mutasi tunai." },
 			{ label: "Buku Pembantu Bank", icon: "i-lucide-landmark", to: "/penatausahaan/bank", phase: 1, description: "BKU difilter mutasi bank." },
 			{ label: "Buku Pembantu Pajak", icon: "i-lucide-receipt", to: "/penatausahaan/pajak", phase: 1, description: "Pungutan dan setoran pajak per jenis.", redesign: true },
-			{ label: "Cetak Kwitansi A2", icon: "i-lucide-printer", to: "/penatausahaan/kwitansi", phase: 2, description: "Kelompok nota, gabungan bukti, foto nota, cetak Bukti Pengeluaran dan Kwitansi A2.", redesign: true }
+			{ label: "Cetak Kwitansi A2", icon: "i-lucide-printer", to: "/penatausahaan/kwitansi", phase: 2, description: "Kelompok nota, gabungan bukti, foto nota, cetak Bukti Pengeluaran dan Kwitansi A2.", redesign: true },
+			{ label: "Kelengkapan SPJ", icon: "i-lucide-clipboard-check", to: "/penatausahaan/spj", phase: 7, description: "Cek dokumen SPJ tiap transaksi BKU, unggah scan (SIPLah, kwitansi, foto), dan cetak paket SPJ." }
 		]
 	},
 	{

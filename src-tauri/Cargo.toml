@@ -1,6 +1,6 @@
 [package]
 name = "silajur"
-version = "0.5.0"
+version = "0.5.1"
 description = "Aplikasi pendamping ARKAS untuk SPJ BOSP"
 license = "MIT"
 edition = "2021"

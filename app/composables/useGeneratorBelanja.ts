@@ -41,6 +41,7 @@ export const useGeneratorBelanja = <T>(opts: {
 	const month = ref(0);
 	const search = ref("");
 	const hanyaCocok = ref(true);
+	const route = useRoute();
 
 	const selectedKey = ref<string | null>(null);
 	const form = ref(null) as Ref<T | null>;
@@ -127,6 +128,10 @@ export const useGeneratorBelanja = <T>(opts: {
 		saved.value = tersimpan ?? {};
 		guru.value = daftarGuru ?? [];
 		await loadGroups();
+		// Dibuka dari Kelengkapan SPJ (?nota=<kunci>): langsung pilih belanja itu.
+		const target = typeof route.query.nota === "string" ? route.query.nota : "";
+		const g = target ? groups.value.find((x) => x.key === target) : undefined;
+		if (g) pick(g);
 	};
 
 	watch([year, connected], loadYear, { immediate: true });

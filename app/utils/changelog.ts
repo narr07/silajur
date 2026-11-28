@@ -9,6 +9,20 @@ export interface VersiRilis {
 
 export const CHANGELOG: VersiRilis[] = [
 	{
+		versi: "0.5.1",
+		tanggal: "2026-11-28",
+		judul: "Kelengkapan SPJ sesuai daftar kabupaten",
+		ringkasan: "Cek kelengkapan dokumen SPJ tiap transaksi BKU, unggah scan dari SIPLah dan bukti lain, lalu cetak semuanya sekaligus. Penomoran surat lewat Google Drive kini aktif.",
+		perubahan: [
+			{ jenis: "baru", teks: "Menu Penatausahaan > Kelengkapan SPJ: daftar dokumen wajib tiap transaksi BKU sesuai daftar Kelengkapan SPJ BOSP Kabupaten Majalengka 2026 (15 kategori belanja), ditambah Standing Instruction" },
+			{ jenis: "baru", teks: "Status terisi otomatis dari kwitansi yang sudah dicetak, Generator Konsumsi Rapat, Generator SPPD, dan berkas yang diunggah; dokumen fisik cukup dicentang" },
+			{ jenis: "baru", teks: "Unggah scan/foto/PDF per dokumen, termasuk SP, Surat Hasil Pemeriksaan, BAST, invoice, dan kuitansi dari SIPLah; pratinjau PDF di dalam aplikasi" },
+			{ jenis: "baru", teks: "Cetak paket SPJ per transaksi atau semua yang lengkap sekaligus: lembar kendali, bukti pengeluaran, kwitansi A2, dan semua lampiran termasuk halaman PDF" },
+			{ jenis: "baru", teks: "Ambil nomor surat dari Agenda Surat (bersama Ceklis SD lewat Google Drive) kini aktif" },
+			{ jenis: "ubah", teks: "Catatan rilis di jendela pembaruan tampil rapi (judul, bagian, dan daftar), bukan teks Markdown mentah" }
+		]
+	},
+	{
 		versi: "0.5.0",
 		tanggal: "2026-11-28",
 		judul: "Ceklis BOSP, Surat BOSP, dan pengingat tanggal 20",

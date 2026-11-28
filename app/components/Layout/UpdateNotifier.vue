@@ -8,8 +8,23 @@
 	>
 		<template #body>
 			<div class="space-y-3">
-				<div v-if="update?.body" class="max-h-64 overflow-auto bg-elevated p-3 text-sm whitespace-pre-wrap">
-					{{ update.body }}
+				<div v-if="catatan.length" class="max-h-72 space-y-2 overflow-auto rounded-md bg-elevated p-3 text-sm">
+					<template v-for="(b, i) in catatan" :key="i">
+						<p v-if="b.jenis === 'judul'" class="font-semibold text-highlighted">
+							<LayoutTeksCatatan :segmen="b.segmen" />
+						</p>
+						<p v-else-if="b.jenis === 'bagian'" class="pt-1 text-xs font-semibold uppercase tracking-wide text-primary">
+							<LayoutTeksCatatan :segmen="b.segmen" />
+						</p>
+						<ul v-else-if="b.jenis === 'daftar'" class="list-disc space-y-1 pl-5 text-default">
+							<li v-for="(it, j) in b.item" :key="j">
+								<LayoutTeksCatatan :segmen="it" />
+							</li>
+						</ul>
+						<p v-else class="text-default">
+							<LayoutTeksCatatan :segmen="b.segmen" />
+						</p>
+					</template>
 				</div>
 				<p v-else class="text-sm text-muted">
 					Versi baru berisi perbaikan dan fitur terbaru.
@@ -44,6 +59,8 @@
 	const { update, open, installing, progress, error, cek, pasang, nanti } = useUpdater();
 
 	const tanggalRilis = computed(() => (update.value?.date ? tanggalPanjang(update.value.date.slice(0, 10)) : ""));
+	/** Catatan rilis (Markdown) dirender sebagai judul, bagian, dan daftar, bukan teks mentah. */
+	const catatan = computed(() => uraiCatatan(update.value?.body ?? ""));
 
 	let tunggu: ReturnType<typeof setTimeout> | undefined;
 	const cekSekali = () => {

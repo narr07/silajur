@@ -1,15 +1,13 @@
-### SiLajur 0.5.0 - Ceklis BOSP, Surat BOSP, dan pengingat tanggal 20
+### SiLajur 0.5.1 - Kelengkapan SPJ sesuai daftar kabupaten
 
-Tugas BOSP kepala sekolah dan bendahara, beserta surat-suratnya, kini ada di SiLajur. Ada juga pengingat bulanan untuk membelanjakan anggaran dan membuat SI.
+Cek kelengkapan dokumen SPJ tiap transaksi BKU, unggah scan dari SIPLah dan bukti lain, lalu cetak semuanya sekaligus. Penomoran surat lewat Google Drive kini aktif.
 
 #### Fitur Baru:
-- Menu Administrasi BOSP > Ceklis BOSP: tugas kepala sekolah dan bendahara per tahun anggaran, dengan ringkasan aturan (Juknis BOSP, belanja barang/jasa, ARKAS, pajak) dan tautan ke halaman SiLajur terkait seperti Cetak SPTJM, Register Kas, dan Rekonsiliasi Bank.
-- Menu Administrasi BOSP > Surat BOSP: paket rapat RKAS (undangan, daftar hadir, notulen, berita acara, pengesahan, dokumentasi), SK Tim BOSP, dokumen persiapan belanja, BA perbandingan penyedia, pengumuman penggunaan dana, daftar honor PPh 21, dan SPJ honor. Isian otomatis dari Pengaturan; bisa dicetak atau disimpan sebagai .docx.
-- Pengingat mulai tanggal 20 tiap bulan bila rencana belanja RKAS bulan itu belum terealisasi atau SI bulan itu belum dibuat. Muncul sebagai pemberitahuan dan di Dashboard, bisa ditunda ke besok atau ditandai selesai, dan tanggalnya bisa diatur di Pengaturan.
+- Menu **Penatausahaan > Kelengkapan SPJ**: daftar dokumen wajib tiap transaksi BKU sesuai daftar Kelengkapan SPJ BOSP Kabupaten Majalengka 2026 (15 kategori belanja), ditambah Standing Instruction.
+- Status terisi otomatis dari kwitansi yang sudah dicetak, Generator Konsumsi Rapat, Generator SPPD, dan berkas yang diunggah; dokumen fisik cukup dicentang.
+- Unggah scan/foto/PDF per dokumen, termasuk SP, Surat Hasil Pemeriksaan, BAST, invoice, dan kuitansi dari SIPLah. PDF bisa dipratinjau di dalam aplikasi.
+- Cetak paket SPJ per transaksi atau semua yang lengkap sekaligus: lembar kendali, bukti pengeluaran, kwitansi A2, dan semua lampiran termasuk halaman PDF.
+- Tombol **Ambil nomor dari Agenda** (penomoran bersama Ceklis SD lewat Google Drive) kini aktif.
 
 #### Perubahan:
-- Nomor surat mengikuti SE Bupati Majalengka No. 7 Tahun 2025 tentang Penomoran Naskah Dinas (K/N/S/Y), dengan pilihan kode klasifikasi arsip Perbup Majalengka No. 25 Tahun 2023.
-- Nomor Berita Acara rapat RKAS kini bisa diisi sendiri.
-
-#### Catatan:
-- Tombol "Ambil nomor dari Agenda" (penomoran bersama Ceklis SD lewat Google Drive) sudah ada di generator Rapat, SPPD, SI, Surat BOSP, dan BA Rekonsiliasi, tetapi baru aktif di rilis berikutnya. Untuk sementara nomor tetap bisa diketik sendiri.
+- Catatan rilis di jendela pembaruan tampil rapi, bukan teks Markdown mentah.
